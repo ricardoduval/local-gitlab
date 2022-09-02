@@ -1,0 +1,54 @@
+version: '3.6'
+
+networks:
+  gitlab-network:
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.21.0.0/24
+
+services:
+  gitlab:
+    image: 'gitlab/gitlab-ce:latest'
+    restart: unless-stopped
+    hostname: 'gitlab.example.com'
+    environment:
+      GITLAB_SHARED_RUNNERS_REGISTRATION_TOKEN: "${SHARED_RUNNER_REG_TOKEN:-0356f87e-a464-45f8-b5a2-840fa3d0a4d1}"
+      GITLAB_OMNIBUS_CONFIG: |
+        external_url 'http://gitlab.example.com'
+        nginx['redirect_http_to_https'] = false
+        gitlab_rails['initial_root_password'] = '${ROOT_PASSWORD:-RootPassword}'
+    ports:
+      - '8080:8080'
+      - '80:80'
+      - '443:443'
+      - '8822:22'
+    volumes:
+      - '/tmp/gitlab/config:/etc/gitlab:Z'
+      - '/tmp/gitlab/logs:/var/log/gitlab:Z'
+      - '/tmp/gitlab/data:/var/opt/gitlab:Z'
+    networks:
+      - gitlab-network
+
+  gitlab-runner:
+    build: ./runner
+    restart: unless-stopped
+    hostname: 'runner1.example.com'
+    environment:
+      DOCKER_EXTRA_HOSTS: "gitlab.example.com:172.21.0.2"
+      LOG_LEVEL: info
+      DOCKER_NETWORK_MODE: host
+      DOCKER_VOLUMES: '/var/run/docker.sock:/var/run/docker.sock'
+      REGISTRATION_TOKEN: "${SHARED_RUNNER_REG_TOKEN:-0356f87e-a464-45f8-b5a2-840fa3d0a4d1}"
+      RUNNER_TAG_LIST: 'aws,dind,docker'
+      CI_SERVER_URL: 'http://gitlab.example.com'
+      RUNNER_EXECUTOR: docker
+      DOCKER_IMAGE: 'docker:20.10.17'
+      DOCKER_PRIVILEGED: 1
+    depends_on:
+      - gitlab
+    volumes:
+      - '/tmp/runner/config:/etc/gitlab-runner:Z'
+      - '/var/run/docker.sock:/var/run/docker.sock'
+    networks:
+      - gitlab-network
