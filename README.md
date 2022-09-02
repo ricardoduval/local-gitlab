@@ -243,12 +243,14 @@ Then finally create the project called `Build Docker`.
 
 ![Create Project](./docs/gitlab_localhost_project.jpg)
 
-Now go to `repositories/build-docker` in the VM and
-execute the following commands.
+Now go to `repositories/build-docker` in the VM, copy the
+folder somewhere else like `/tmp` to prevent git 
+submodule issues, and execute the following commands
+inside the folder you copied the contents to.
 
 ```shell
 git init
-git config --global init.defaultBranch main
+git config --local init.defaultBranch main
 git config --local user.email "test@test.local"
 git config --local user.name "Test user"
 git remote add origin ssh://git@localhost:8822/my-group/build-docker.git
