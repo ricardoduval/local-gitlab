@@ -1,0 +1,23 @@
+image: docker:20.10.17
+
+before_script:
+  - docker info
+
+stages:
+  - build
+  - test container
+
+build nginx image:
+  stage: build
+  tags:
+    - dind
+  script:
+    - docker build -t nginx-test:latest .
+    - docker tag nginx-test:latest nginx-test:$CI_COMMIT_SHORT_SHA
+
+check container existence:
+  stage: test container
+  tags:
+    - dind
+  script:
+    - docker images
