@@ -187,12 +187,12 @@ The initial start up of the VM may take a while, as
 all the provisioning will run.
 
 After the VM is up and you are able to SSH into it,
-run the `provision.sh` file. That will trigger the
+run the `bootstrap.sh` file. That will trigger the
 containers creation and the CLI and API interactions
 with the Gitlab server container.
 
 ```shell
-sh provision.sh
+sh bootstrap.sh
 ```
 
 You will notice Gitlab takes a long while to come up,
