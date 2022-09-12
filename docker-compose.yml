@@ -9,7 +9,7 @@ networks:
 
 services:
   gitlab:
-    image: 'gitlab/gitlab-ce:latest'
+    image: 'gitlab/gitlab-ce:15.3.3-ce.0'
     restart: unless-stopped
     hostname: 'gitlab.example.com'
     environment:
@@ -18,6 +18,10 @@ services:
         external_url 'http://gitlab.example.com'
         nginx['redirect_http_to_https'] = false
         gitlab_rails['initial_root_password'] = '${ROOT_PASSWORD:-RootPassword}'
+        # Optimizations to reduce the memory footprint
+        prometheus_monitoring['enable'] = false
+        sidekiq['concurrency'] = 5
+        postgresql['shared_buffers'] = "512MB"
     ports:
       - '8080:8080'
       - '80:80'

@@ -16,7 +16,7 @@ docker-compose up -d
 i=0
 while ! docker-compose ps | grep local-gitlab-gitlab-1 | awk '{print $4 $5}' | grep 'running(healthy)'; do
   sleep 10
-  if [[ "${i}" -gt "60" ]]; then
+  if [[ "${i}" -gt "90" ]]; then
     echo "Gitlab failed to come up after $((i * 10)) seconds"
     exit 1
   fi
